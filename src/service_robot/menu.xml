@@ -1,0 +1,12 @@
+<library path="src">
+  <class name="Menu" type="service_robot.menu.MenuPlugin" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      A GUI Menu for the Service Robot
+    </description>
+    <qtgui>
+      <label>Menu Plugin</label>
+      <icon type="theme">system-help</icon>
+      <statustip>A Menu for Ordering Food</statustip>
+    </qtgui>
+  </class>
+</library>
