@@ -1,0 +1,12 @@
+<library path="src">
+  <class name="ORder" type="service_robot.order.OrderPlugin" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      A GUI Menu for the Service Robot
+    </description>
+    <qtgui>
+      <label>Ordering Plugin</label>
+      <icon type="theme">system-help</icon>
+      <statustip>A Menu for Ordering Food</statustip>
+    </qtgui>
+  </class>
+</library>
