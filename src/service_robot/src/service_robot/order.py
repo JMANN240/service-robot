@@ -5,8 +5,10 @@ import tf
 import math
 
 from std_msgs.msg import Int64
+from std_msgs.msg import String
 from geometry_msgs.msg import PoseStamped
 from actionlib_msgs.msg import GoalStatusArray
+from actionlib_msgs.msg import GoalID
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
@@ -96,6 +98,7 @@ def makeOrderCallback(qtlist, customer, food):
         print(f"{order['customer']} made order of {order['food']} to {order['chef']}")
         location = chef
         goal_publisher.publish(poses[location])
+        #self.last_id = status.status_list[0].goal_id
     return cb
 
 def pickupOrdersFromChef(chef):
@@ -117,6 +120,7 @@ def getOrdersByStatus(status):
     return [order for order in orders if order['status'] == status]
 
 goal_publisher = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=10)
+cancel_publisher = rospy.Publisher('/move_base/cancel', GoalID, queue_size=10)
 
 class OrderPlugin(Plugin):
 
@@ -125,6 +129,9 @@ class OrderPlugin(Plugin):
         # Give QObjects reasonable names
         self.setObjectName('OrderPlugin')
 
+        self.last_order = "GO!"
+        self.last_id = None
+        
         # Create QWidget
         self._widget = QMainWindow()
         # Get path to UI file which should be in the "resource" folder of this package
@@ -150,11 +157,24 @@ class OrderPlugin(Plugin):
         self._widget.customer_3_spaghetti_button.clicked.connect(makeOrderCallback(self._widget.orders_list, 'customer_c', "spaghetti"))
 
         rospy.Subscriber('/move_base/status', GoalStatusArray, self.makeGetStatusCallback())
+        rospy.Subscriber('/stop_sign', String, self.makeHandleSigns())
         
         if context.serial_number() > 1:
             self._widget.setWindowTitle(self._widget.windowTitle() + (' (%d)' % context.serial_number()))
         # Add widget to the user interface
         context.add_widget(self._widget)
+
+    def makeHandleSigns(self):
+        def handle_signs(data):
+            print(self.last_order, data.data)
+            if data.data == "STOP!" and self.last_order != 'STOP':
+                #print(self.last_id)
+                cancel_publisher.publish(self.last_id)
+            elif data.data == "GO!" and self.last_order != 'GO!':
+                goal_publisher.publish(poses[location])
+            self.last_order = data.data
+
+        return handle_signs
 
     def shutdown_plugin(self):
         # TODO unregister all publishers here
@@ -178,8 +198,10 @@ class OrderPlugin(Plugin):
             if len(status.status_list) == 0:
                 return
 
+            self.last_id = status.status_list[-1].goal_id
+
             # Get the new move status
-            new_move_status = status.status_list[0].status
+            new_move_status = status.status_list[-1].status
             
             # Guard clause: didn't newly arrive somewhere
             if new_move_status != 3 or last_move_status == 3:
@@ -209,6 +231,7 @@ class OrderPlugin(Plugin):
                 location = ordered_orders[0]['chef']
             
             goal_publisher.publish(poses[location])
+            #self.last_id = status.status_list[0].goal_id
             
             last_move_status = new_move_status
 
