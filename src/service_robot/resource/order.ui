@@ -23,7 +23,7 @@
       <height>251</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="customers_layout">
      <property name="leftMargin">
       <number>10</number>
      </property>
@@ -37,7 +37,7 @@
       <number>10</number>
      </property>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
+      <layout class="QVBoxLayout" name="customer_1_layout">
        <property name="leftMargin">
         <number>10</number>
        </property>
@@ -100,7 +100,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QVBoxLayout" name="customer_2_layout">
        <property name="leftMargin">
         <number>10</number>
        </property>
@@ -160,7 +160,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="customer_3_layout">
        <property name="leftMargin">
         <number>10</number>
        </property>
@@ -221,6 +221,16 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="Line" name="line_4">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QListWidget" name="orders_list"/>
      </item>
     </layout>
    </widget>
